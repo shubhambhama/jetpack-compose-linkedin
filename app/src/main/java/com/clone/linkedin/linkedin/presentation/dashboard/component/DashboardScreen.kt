@@ -45,6 +45,7 @@ import com.clone.linkedin.linkedin.presentation.dashboard.PostAction
 import com.clone.linkedin.linkedin.presentation.dashboard.PostHeader
 import com.clone.linkedin.linkedin.presentation.util.ExpandableText
 import com.clone.linkedin.linkedin.presentation.util.RoundImage
+import com.clone.linkedin.ui.theme.LightBlue
 import com.clone.linkedin.ui.theme.loveRed
 import com.clone.linkedin.ui.theme.textIconViewColor
 
@@ -72,28 +73,41 @@ private fun PostList(viewModel: DashboardViewModel = hiltViewModel()) {
 @Composable
 private fun NormalPostItem(modifier: Modifier = Modifier, post: NormalPost) {
     Surface(modifier.padding(bottom = 8.dp)) {
-        Box {
-            Column(modifier = Modifier.padding(top = 8.dp)) {
-                post.postHeader?.let { PostHeader(postHeader = post.postHeader, modifier = Modifier.padding(start = 8.dp).wrapContentSize()) }
-                Row(modifier = Modifier.padding(start = 16.dp)) {
-                    RoundImage(imageResId = post.postTop.userProfileImage, modifier = Modifier.size(48.dp))
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Column {
-                        Text(text = post.postTop.userName, style = TextStyle(fontWeight = FontWeight.Bold, fontSize = TextUnit(14F, TextUnitType.Sp)))
-                        Text(text = post.postTop.information, fontSize = TextUnit(12F, TextUnitType.Sp))
-                        Text(text = post.postTop.postTime, fontSize = TextUnit(12F, TextUnitType.Sp))
-                    }
-                }
-                ExpandableText(
-                    modifier = Modifier.animateContentSize().padding(start = 16.dp, top = 4.dp, bottom = 8.dp, end = 4.dp), text = post.postCenter.caption,
-                    maxLines = 2
+        Column(modifier = Modifier.padding(top = 8.dp)) {
+            post.postHeader?.let {
+                PostHeader(
+                    postHeader = post.postHeader,
+                    modifier = Modifier.padding(start = 8.dp).wrapContentSize()
                 )
-                Image(painter = painterResource(R.drawable.sample_image), modifier = Modifier.fillMaxSize(), contentDescription = null, contentScale = ContentScale.Crop)
-                LikeShareCommentInfo(modifier = Modifier.padding(10.dp), postAction = post.postAction)
-                Divider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp).height(1.dp))
-                PostAction()
-                Spacer(modifier = Modifier.height(8.dp))
             }
+            Row(modifier = Modifier.padding(start = 16.dp)) {
+                RoundImage(imageResId = post.postTop.userProfileImage, modifier = Modifier.size(48.dp))
+                Spacer(modifier = Modifier.width(16.dp))
+                Column {
+                    Text(
+                        text = post.postTop.userName,
+                        style = TextStyle(fontWeight = FontWeight.Bold, fontSize = TextUnit(14F, TextUnitType.Sp))
+                    )
+                    Text(text = post.postTop.information, fontSize = TextUnit(12F, TextUnitType.Sp))
+                    Text(text = post.postTop.postTime, fontSize = TextUnit(12F, TextUnitType.Sp))
+                }
+                ConnectFollowJoin(R.drawable.ic_add, "Follow")
+            }
+            ExpandableText(
+                modifier = Modifier.animateContentSize().padding(start = 16.dp, top = 4.dp, bottom = 8.dp, end = 4.dp),
+                text = post.postCenter.caption,
+                maxLines = 2
+            )
+            Image(
+                painter = painterResource(R.drawable.sample_image),
+                modifier = Modifier.fillMaxSize(),
+                contentDescription = null,
+                contentScale = ContentScale.Crop
+            )
+            LikeShareCommentInfo(modifier = Modifier.padding(10.dp), postAction = post.postAction)
+            Divider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp).height(1.dp))
+            PostAction()
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
@@ -149,8 +163,35 @@ fun PostAction() {
 @Composable
 private fun PostActionElement(icon: Int, text: String) {
     Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-        Image(painter = painterResource(icon), modifier = Modifier.size(20.dp).padding(2.dp), contentDescription = text, colorFilter = ColorFilter.tint(textIconViewColor
-            ()))
+        Image(
+            painter = painterResource(icon),
+            modifier = Modifier.size(20.dp).padding(2.dp),
+            contentDescription = text,
+            colorFilter = ColorFilter.tint(
+                textIconViewColor()
+            )
+        )
         Text(text = text, fontSize = TextUnit(12F, TextUnitType.Sp), color = textIconViewColor())
+    }
+}
+
+@Composable
+private fun ConnectFollowJoin(icon: Int?, text: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End
+    ) {
+        icon?.let {
+            Image(
+                painter = painterResource(icon),
+                modifier = Modifier.size(20.dp).padding(2.dp),
+                contentDescription = text,
+                colorFilter = ColorFilter.tint(
+                    LightBlue
+                )
+            )
+        }
+        Text(text = text, fontSize = TextUnit(14F, TextUnitType.Sp), color = LightBlue)
     }
 }

@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">LinkedIn Clone</string>
+
+    <!-- Bottom Navigation -->
+    <string name="home">Home</string>
+    <string name="my_network">My Network</string>
+    <string name="post">Post</string>
+    <string name="notification">Notification</string>
+    <string name="jobs">Jobs</string>
 </resources>
