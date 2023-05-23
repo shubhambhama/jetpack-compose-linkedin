@@ -28,7 +28,7 @@ class DashboardViewModel @Inject constructor(): ViewModel() {
                             "dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
                     R.drawable.ic_launcher_background
                 ), postAction = PostAction(
-                    1, 2, 34
+                    182, 222, 52
                 ),
                 postHeader = PostHeader(R.drawable.user_profile, "XYZ commented on this")
             ),
