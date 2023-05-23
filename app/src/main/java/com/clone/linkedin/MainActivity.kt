@@ -44,7 +44,9 @@ import com.clone.linkedin.ui.theme.DarkGray30
 import com.clone.linkedin.ui.theme.DarkGray60
 import com.clone.linkedin.ui.theme.LightGray
 import com.clone.linkedin.ui.theme.textIconViewColor
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +57,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(MaterialTheme.colorScheme.surface)
-                            .padding(16.dp)
+                            .padding(top = 8.dp, bottom = 6.dp, end = 12.dp, start = 12.dp)
                     )
                     LinkedInNavigate()
                 }
