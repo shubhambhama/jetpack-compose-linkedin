@@ -4,6 +4,8 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,13 +17,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,40 +49,48 @@ import com.clone.linkedin.linkedin.presentation.dashboard.NormalPost
 import com.clone.linkedin.linkedin.presentation.dashboard.PostAction
 import com.clone.linkedin.linkedin.presentation.dashboard.PostHeader
 import com.clone.linkedin.linkedin.presentation.util.ExpandableText
+import com.clone.linkedin.linkedin.presentation.util.LinkedInBottomSheet
 import com.clone.linkedin.linkedin.presentation.util.RoundImage
 import com.clone.linkedin.ui.theme.LightBlue
 import com.clone.linkedin.ui.theme.loveRed
 import com.clone.linkedin.ui.theme.textIconViewColor
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DashboardScreen(navController: NavController) {
+    val bottomSheetVisible = remember { mutableStateOf(false) }
     Box(Modifier.fillMaxSize().background(Color.Black)) {
-        PostList()
-    }
-}
-
-@Composable
-private fun PostList(viewModel: DashboardViewModel = hiltViewModel()) {
-    val posts = viewModel.postState.value
-
-    LazyColumn(modifier = Modifier.padding(top = 8.dp)) {
-        items(posts.size) {
-            val data = posts[it]
-            if (data is NormalPost) {
-                NormalPostItem(post = data, modifier = Modifier)
+        PostList(bottomSheetVisible = bottomSheetVisible)
+        if (bottomSheetVisible.value) {
+            LinkedInBottomSheet {
+                bottomSheetVisible.value = false
             }
         }
     }
 }
 
 @Composable
-private fun NormalPostItem(modifier: Modifier = Modifier, post: NormalPost) {
+private fun PostList(viewModel: DashboardViewModel = hiltViewModel(), bottomSheetVisible: MutableState<Boolean>) {
+    val posts = viewModel.postState.value
+
+    LazyColumn(modifier = Modifier.padding(top = 8.dp)) {
+        items(posts.size) {
+            val data = posts[it]
+            if (data is NormalPost) {
+                NormalPostItem(post = data, modifier = Modifier, bottomSheetVisible = bottomSheetVisible)
+            }
+        }
+    }
+}
+
+@Composable
+private fun NormalPostItem(modifier: Modifier = Modifier, post: NormalPost, bottomSheetVisible: MutableState<Boolean>) {
     Surface(modifier.padding(bottom = 8.dp)) {
         Column(modifier = Modifier.padding(top = 8.dp)) {
             post.postHeader?.let {
                 PostHeader(
                     postHeader = post.postHeader,
-                    modifier = Modifier.padding(start = 8.dp).wrapContentSize()
+                    modifier = Modifier.padding(start = 8.dp), bottomSheetVisible = bottomSheetVisible
                 )
             }
             Row(modifier = Modifier.padding(start = 16.dp)) {
@@ -113,7 +126,8 @@ private fun NormalPostItem(modifier: Modifier = Modifier, post: NormalPost) {
 }
 
 @Composable
-fun PostHeader(modifier: Modifier = Modifier, postHeader: PostHeader) {
+fun PostHeader(modifier: Modifier = Modifier, postHeader: PostHeader, bottomSheetVisible: MutableState<Boolean>) {
+    val interactionSource = remember { MutableInteractionSource() }
     Column(Modifier.fillMaxSize()) {
         Row(modifier) {
             RoundImage(imageResId = postHeader.actionUserImage, modifier = Modifier.size(28.dp))
@@ -122,7 +136,9 @@ fun PostHeader(modifier: Modifier = Modifier, postHeader: PostHeader) {
             Image(
                 painter = painterResource(R.drawable.ic_menu_vertical),
                 contentDescription = "Menu Item",
-                modifier = Modifier.size(20.dp).weight(1f).align(Alignment.CenterVertically),
+                modifier = Modifier.size(20.dp).weight(1f).align(Alignment.CenterVertically)
+                    .clickable(interactionSource = interactionSource,
+                    indication = null) { bottomSheetVisible.value = true },
                 colorFilter = ColorFilter.tint(textIconViewColor())
             )
         }
