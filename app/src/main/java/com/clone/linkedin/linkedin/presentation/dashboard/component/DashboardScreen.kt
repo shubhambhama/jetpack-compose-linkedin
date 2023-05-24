@@ -48,9 +48,9 @@ import com.clone.linkedin.linkedin.presentation.dashboard.DashboardViewModel
 import com.clone.linkedin.linkedin.presentation.dashboard.NormalPost
 import com.clone.linkedin.linkedin.presentation.dashboard.PostAction
 import com.clone.linkedin.linkedin.presentation.dashboard.PostHeader
-import com.clone.linkedin.linkedin.presentation.util.ExpandableText
-import com.clone.linkedin.linkedin.presentation.util.LinkedInBottomSheet
-import com.clone.linkedin.linkedin.presentation.util.RoundImage
+import com.clone.linkedin.linkedin.presentation.util.component.ExpandableText
+import com.clone.linkedin.linkedin.presentation.util.component.LinkedInBottomSheet
+import com.clone.linkedin.linkedin.presentation.util.component.RoundImage
 import com.clone.linkedin.ui.theme.LightBlue
 import com.clone.linkedin.ui.theme.loveRed
 import com.clone.linkedin.ui.theme.textIconViewColor

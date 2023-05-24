@@ -1,4 +1,4 @@
-package com.clone.linkedin.linkedin.presentation.util
+package com.clone.linkedin.linkedin.presentation.util.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.shape.CircleShape
