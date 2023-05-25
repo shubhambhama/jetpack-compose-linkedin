@@ -55,7 +55,6 @@ import com.clone.linkedin.ui.theme.LightBlue
 import com.clone.linkedin.ui.theme.loveRed
 import com.clone.linkedin.ui.theme.textIconViewColor
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DashboardScreen(navController: NavController) {
     val bottomSheetVisible = remember { mutableStateOf(false) }
