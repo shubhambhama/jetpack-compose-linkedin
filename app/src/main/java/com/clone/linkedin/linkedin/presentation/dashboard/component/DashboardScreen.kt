@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -44,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.clone.linkedin.R
+import com.clone.linkedin.linkedin.data.constants.enums.PostButtonAction
 import com.clone.linkedin.linkedin.presentation.dashboard.DashboardViewModel
 import com.clone.linkedin.linkedin.presentation.dashboard.NormalPost
 import com.clone.linkedin.linkedin.presentation.dashboard.PostAction
@@ -84,6 +84,11 @@ private fun PostList(viewModel: DashboardViewModel = hiltViewModel(), bottomShee
 
 @Composable
 private fun NormalPostItem(modifier: Modifier = Modifier, post: NormalPost, bottomSheetVisible: MutableState<Boolean>) {
+    val likeButtonState = remember { mutableStateOf(false) }
+    val commentButtonState = remember { mutableStateOf(false) }
+    val repostButtonState = remember { mutableStateOf(false) }
+    val sendButtonState = remember { mutableStateOf(false) }
+
     Surface(modifier.padding(bottom = 8.dp)) {
         Column(modifier = Modifier.padding(top = 8.dp)) {
             post.postHeader?.let {
@@ -116,9 +121,16 @@ private fun NormalPostItem(modifier: Modifier = Modifier, post: NormalPost, bott
                 contentDescription = null,
                 contentScale = ContentScale.Crop
             )
-            LikeShareCommentInfo(modifier = Modifier.padding(10.dp), postAction = post.postAction)
+            LikeShareCommentInfo(
+                modifier = Modifier.padding(10.dp),
+                postAction = post.postAction,
+                likeButtonState,
+                commentButtonState,
+                repostButtonState,
+                sendButtonState
+            )
             Divider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp).height(1.dp))
-            PostAction()
+            PostAction(likeButtonState, commentButtonState, repostButtonState, sendButtonState)
             Spacer(modifier = Modifier.height(8.dp))
         }
     }
@@ -148,7 +160,16 @@ fun PostHeader(modifier: Modifier = Modifier, postHeader: PostHeader, bottomShee
 }
 
 @Composable
-fun LikeShareCommentInfo(modifier: Modifier = Modifier, postAction: PostAction) {
+fun LikeShareCommentInfo(
+    modifier: Modifier = Modifier, postAction: PostAction, likeButtonState: MutableState<Boolean>,
+    commentButtonState: MutableState<Boolean>,
+    repostButtonState: MutableState<Boolean>,
+    sendButtonState: MutableState<Boolean>
+) {
+    val likeText = if (likeButtonState.value) "You and ${postAction.likes} others" else postAction.likes.toString()
+    val commentText = if (commentButtonState.value) "${postAction.comments + 1} comments" else "${postAction.comments} comments"
+    val repostText = if (repostButtonState.value) "${postAction.share + 1} reposts" else "${postAction.share} reposts"
+
     Row(modifier) {
         Row(modifier = Modifier.weight(1f)) {
             Image(
@@ -157,38 +178,52 @@ fun LikeShareCommentInfo(modifier: Modifier = Modifier, postAction: PostAction) 
                 contentDescription = null,
                 colorFilter = ColorFilter.tint(loveRed)
             )
-            Text(text = postAction.likes.toString(), fontSize = TextUnit(12F, TextUnitType.Sp), textAlign = TextAlign.Center, modifier = Modifier.padding(start = 5.dp))
+            Text(text = likeText, fontSize = TextUnit(12F, TextUnitType.Sp), textAlign = TextAlign.Center, modifier = Modifier.padding(start = 5.dp))
         }
         Box(contentAlignment = Alignment.CenterEnd, modifier = Modifier.weight(1f)) {
             Row {
-                Text(text = "${postAction.comments} comments • ${postAction.share} reposts", fontSize = TextUnit(12F, TextUnitType.Sp), textAlign = TextAlign.Left)
+                Text(text = "$commentText • $repostText", fontSize = TextUnit(12F, TextUnitType.Sp), textAlign = TextAlign.Left)
             }
         }
     }
 }
 
 @Composable
-fun PostAction() {
+fun PostAction(
+    likeButtonState: MutableState<Boolean>,
+    commentButtonState: MutableState<Boolean>,
+    repostButtonState: MutableState<Boolean>,
+    sendButtonState: MutableState<Boolean>
+) {
     Row(horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-        PostActionElement(R.drawable.ic_thumbs_up, "Like")
-        PostActionElement(R.drawable.ic_comment, "Comment")
-        PostActionElement(R.drawable.ic_repost, "Repost")
-        PostActionElement(R.drawable.ic_send, "Send")
+        PostActionElement(R.drawable.ic_thumbs_up, PostButtonAction.LIKE) {
+            likeButtonState.value = !likeButtonState.value
+        }
+        PostActionElement(R.drawable.ic_comment, PostButtonAction.COMMENT) {
+            commentButtonState.value = !commentButtonState.value
+        }
+        PostActionElement(R.drawable.ic_repost, PostButtonAction.REPOST) {
+            repostButtonState.value = !repostButtonState.value
+        }
+        PostActionElement(R.drawable.ic_send, PostButtonAction.SEND) {
+            sendButtonState.value = !sendButtonState.value
+        }
     }
 }
 
 @Composable
-private fun PostActionElement(icon: Int, text: String) {
-    Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+private fun PostActionElement(icon: Int, postButton: PostButtonAction, onClick: (PostButtonAction) -> Unit) {
+    Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable { onClick.invoke(postButton) }) {
         Image(
             painter = painterResource(icon),
             modifier = Modifier.size(20.dp).padding(2.dp),
-            contentDescription = text,
+            contentDescription = postButton.value,
             colorFilter = ColorFilter.tint(
                 textIconViewColor()
             )
         )
-        Text(text = text, fontSize = TextUnit(12F, TextUnitType.Sp), color = textIconViewColor())
+        Text(text = postButton.value, fontSize = TextUnit(12F, TextUnitType.Sp), color = textIconViewColor())
     }
 }
 
