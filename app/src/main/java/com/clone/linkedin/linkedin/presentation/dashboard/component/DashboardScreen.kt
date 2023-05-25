@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -103,7 +103,7 @@ private fun NormalPostItem(modifier: Modifier = Modifier, post: NormalPost, bott
                     Text(text = post.postTop.information, fontSize = TextUnit(12F, TextUnitType.Sp))
                     Text(text = post.postTop.postTime, fontSize = TextUnit(12F, TextUnitType.Sp))
                 }
-                ConnectFollowJoin(R.drawable.ic_add, "Follow")
+                ConnectFollowJoin(Pair("Follow", R.drawable.ic_add), Pair("Following", R.drawable.ic_tick))
             }
             ExpandableText(
                 modifier = Modifier.animateContentSize().padding(start = 16.dp, top = 4.dp, bottom = 8.dp, end = 4.dp),
@@ -136,8 +136,10 @@ fun PostHeader(modifier: Modifier = Modifier, postHeader: PostHeader, bottomShee
                 painter = painterResource(R.drawable.ic_menu_vertical),
                 contentDescription = "Menu Item",
                 modifier = Modifier.size(20.dp).weight(1f).align(Alignment.CenterVertically)
-                    .clickable(interactionSource = interactionSource,
-                    indication = null) { bottomSheetVisible.value = true },
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) { bottomSheetVisible.value = true },
                 colorFilter = ColorFilter.tint(textIconViewColor())
             )
         }
@@ -191,22 +193,26 @@ private fun PostActionElement(icon: Int, text: String) {
 }
 
 @Composable
-private fun ConnectFollowJoin(icon: Int?, text: String) {
+private fun ConnectFollowJoin(beforeActionButton: Pair<String, Int?>, afterActionButton: Pair<String, Int?>) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFollowButton = remember { mutableStateOf(true) }
+    val whichButton = if (isFollowButton.value) beforeActionButton else afterActionButton
+    val viewColor = if (isFollowButton.value) LightBlue else textIconViewColor()
     Row(
-        modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
+        modifier = Modifier.fillMaxWidth().padding(end = 16.dp).clickable(indication = null, interactionSource = interactionSource) {
+            isFollowButton.value = !isFollowButton.value
+        },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End
     ) {
-        icon?.let {
+        whichButton.second?.let { icon ->
             Image(
                 painter = painterResource(icon),
                 modifier = Modifier.size(20.dp).padding(2.dp),
-                contentDescription = text,
-                colorFilter = ColorFilter.tint(
-                    LightBlue
-                )
+                contentDescription = whichButton.first,
+                colorFilter = ColorFilter.tint(viewColor)
             )
         }
-        Text(text = text, fontSize = TextUnit(14F, TextUnitType.Sp), color = LightBlue)
+        Text(text = whichButton.first, fontSize = TextUnit(14F, TextUnitType.Sp), color = viewColor)
     }
 }
