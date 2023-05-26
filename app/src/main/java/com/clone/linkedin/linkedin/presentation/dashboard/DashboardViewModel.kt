@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.clone.linkedin.R
+import com.clone.linkedin.linkedin.domain.model.BottomSheetData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -58,4 +59,14 @@ class DashboardViewModel @Inject constructor(): ViewModel() {
             )
         )
     }
+
+    fun getDataForPostMenu() =
+        listOf(
+            BottomSheetData(R.drawable.ic_save, "Save"),
+            BottomSheetData(R.drawable.ic_share, "Share via"),
+            BottomSheetData(R.drawable.ic_hide, "I don't want to see this"),
+            BottomSheetData(R.drawable.ic_cancel, "Unfollow"),
+            BottomSheetData(R.drawable.ic_unfollow, "Remove connection"),
+            BottomSheetData(R.drawable.ic_report_post, "Report post"),
+        )
 }

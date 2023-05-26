@@ -1,6 +1,9 @@
 package com.clone.linkedin.linkedin.presentation.util.component
 
+import android.content.Context
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.runtime.Composable
@@ -9,15 +12,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import coil.compose.rememberAsyncImagePainter
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.clone.linkedin.R
 import com.clone.linkedin.ui.theme.textIconViewColor
 
@@ -27,6 +38,19 @@ fun RoundImage(
 ) {
     Image(painter = painterResource(id = imageResId), contentDescription = whoseImage, modifier = modifier.clip(CircleShape))
 }
+
+@Composable
+fun Context.ImageViaUrl(modifier: Modifier = Modifier, imageUrl: String, shape: Shape) {
+    val imageRequest = ImageRequest.Builder(this)
+        .diskCachePolicy(CachePolicy.ENABLED)
+        .memoryCachePolicy(CachePolicy.ENABLED)
+        .data(imageUrl).build()
+    val asyncImage = rememberAsyncImagePainter(imageRequest)
+    Image(
+        painter = asyncImage, contentDescription = null, modifier = modifier
+            .clip(shape), contentScale = ContentScale.Crop)
+}
+
 
 @Composable
 fun ExpandableText(

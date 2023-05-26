@@ -58,10 +58,11 @@ import com.clone.linkedin.ui.theme.textIconViewColor
 @Composable
 fun DashboardScreen(navController: NavController) {
     val bottomSheetVisible = remember { mutableStateOf(false) }
+    val viewModel: DashboardViewModel = hiltViewModel()
     Box(Modifier.fillMaxSize().background(Color.Black)) {
-        PostList(bottomSheetVisible = bottomSheetVisible)
+        PostList(bottomSheetVisible = bottomSheetVisible, viewModel = viewModel)
         if (bottomSheetVisible.value) {
-            LinkedInBottomSheet {
+            LinkedInBottomSheet(viewModel.getDataForPostMenu()) {
                 bottomSheetVisible.value = false
             }
         }
@@ -69,7 +70,7 @@ fun DashboardScreen(navController: NavController) {
 }
 
 @Composable
-private fun PostList(viewModel: DashboardViewModel = hiltViewModel(), bottomSheetVisible: MutableState<Boolean>) {
+private fun PostList(viewModel: DashboardViewModel, bottomSheetVisible: MutableState<Boolean>) {
     val posts = viewModel.postState.value
 
     LazyColumn(modifier = Modifier.padding(top = 8.dp)) {
@@ -126,8 +127,7 @@ private fun NormalPostItem(modifier: Modifier = Modifier, post: NormalPost, bott
                 postAction = post.postAction,
                 likeButtonState,
                 commentButtonState,
-                repostButtonState,
-                sendButtonState
+                repostButtonState
             )
             Divider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp).height(1.dp))
             PostAction(likeButtonState, commentButtonState, repostButtonState, sendButtonState)
@@ -163,8 +163,7 @@ fun PostHeader(modifier: Modifier = Modifier, postHeader: PostHeader, bottomShee
 fun LikeShareCommentInfo(
     modifier: Modifier = Modifier, postAction: PostAction, likeButtonState: MutableState<Boolean>,
     commentButtonState: MutableState<Boolean>,
-    repostButtonState: MutableState<Boolean>,
-    sendButtonState: MutableState<Boolean>
+    repostButtonState: MutableState<Boolean>
 ) {
     val likeText = if (likeButtonState.value) "You and ${postAction.likes} others" else postAction.likes.toString()
     val commentText = if (commentButtonState.value) "${postAction.comments + 1} comments" else "${postAction.comments} comments"

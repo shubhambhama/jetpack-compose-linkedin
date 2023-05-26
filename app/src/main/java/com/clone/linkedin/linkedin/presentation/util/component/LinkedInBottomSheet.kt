@@ -19,10 +19,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.AlertDialog
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ContentAlpha
@@ -43,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -56,7 +53,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun LinkedInBottomSheet(onDismiss: () -> Unit) {
+fun LinkedInBottomSheet(menuItems: List<BottomSheetData>, onDismiss: () -> Unit) {
     val interactionSource = remember { MutableInteractionSource() }
     val sheetState = rememberBottomSheetState(
         initialValue = BottomSheetValue.Collapsed
@@ -99,7 +96,7 @@ fun LinkedInBottomSheet(onDismiss: () -> Unit) {
                         .wrapContentHeight()
                         .background(Color.Transparent)
                         .pointerInput(Unit) {
-                            detectDragGestures {  change, dragAmount ->
+                            detectDragGestures { _, dragAmount ->
                                 if (dragAmount.y > 0) {
                                     scope.launch {
                                         sheetState.collapse()
@@ -132,16 +129,7 @@ fun LinkedInBottomSheet(onDismiss: () -> Unit) {
                             )
                         }
 
-                        SheetList(
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp), listOf(
-                                BottomSheetData(R.drawable.ic_save, "Save"),
-                                BottomSheetData(R.drawable.ic_share, "Share via"),
-                                BottomSheetData(R.drawable.ic_hide, "I don't want to see this"),
-                                BottomSheetData(R.drawable.ic_cancel, "Unfollow"),
-                                BottomSheetData(R.drawable.ic_unfollow, "Remove connection"),
-                                BottomSheetData(R.drawable.ic_report_post, "Report post"),
-                            )
-                        )
+                        SheetList(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp), menuItems)
                     }
                 }
             }
@@ -154,7 +142,7 @@ fun LinkedInBottomSheet(onDismiss: () -> Unit) {
     }
 }
 
-
+@Deprecated("Using Bottom Sheet using BottomSheetScaffold.")
 @ExperimentalMaterialApi
 @Composable
 fun LinkedInBottomSheet2(onDismiss: () -> Unit) {
