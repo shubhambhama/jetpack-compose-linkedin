@@ -1,8 +1,10 @@
 package com.clone.linkedin
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,14 +19,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
@@ -53,11 +52,12 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.clone.linkedin.linkedin.presentation.dashboard.component.DashboardScreen
 import com.clone.linkedin.linkedin.presentation.notification.NotificationScreen
-import com.clone.linkedin.linkedin.presentation.util.component.RoundImage
 import com.clone.linkedin.linkedin.presentation.util.Screen
+import com.clone.linkedin.linkedin.presentation.util.component.RoundImage
 import com.clone.linkedin.linkedin.presentation.util.component.currentRoute
 import com.clone.linkedin.ui.theme.DarkGray30
 import com.clone.linkedin.ui.theme.DarkGray60
@@ -68,15 +68,18 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private lateinit var navController: NavHostController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            navController = rememberNavController()
             JetpackComposeLinkedInCloneTheme {
                 Column {
                     TopBar(
                         modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(top = 8.dp, bottom = 6.dp, end = 12.dp, start = 12.dp)
                     )
-                    MainContent()
+                    MainContent(navController = navController)
                 }
             }
         }
@@ -84,8 +87,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainContent(viewModel: MainViewModel = hiltViewModel()) {
-    val navController = rememberNavController()
+fun MainContent(viewModel: MainViewModel = hiltViewModel(), navController: NavHostController) {
     Scaffold(bottomBar = { BottomBar(navController = navController, screens = viewModel.listOfScreen()) }) {
         Box(modifier = Modifier.fillMaxSize().padding(it)) {
             LinkedInNavigate(navController)
@@ -129,10 +131,15 @@ private fun BottomBar(modifier: Modifier = Modifier, navController: NavControlle
                 BottomBarItem(screen, context, currentRoute)
             }, selected = currentRoute == screen.first.route,
                 alwaysShowLabel = true, onClick = {
-                if (currentRoute != screen.first.route) {
-                    navController.navigate(screen.first.route)
-                }
-            })
+                    if (screen.first.route == Screen.DashboardScreen.route) {
+                        navController.navigate(Screen.DashboardScreen.route) {
+                            popUpTo(navController.graph.startDestinationId)
+                            launchSingleTop = true
+                        }
+                    } else if (currentRoute != screen.first.route) {
+                        navController.navigate(screen.first.route)
+                    }
+                })
         }
     }
 }
@@ -190,6 +197,24 @@ private fun SearchBar(modifier: Modifier = Modifier, hint: String = "", onSearch
 
 @Composable
 private fun LinkedInNavigate(navController: NavHostController) {
+    val backStackEntry = navController.currentBackStackEntryAsState()
+    val currentDestination = backStackEntry.value?.destination
+    val activity = (LocalContext.current as? Activity)
+
+    BackHandler {
+        if (currentDestination?.route != Screen.DashboardScreen.route) {
+            navController.navigate(Screen.DashboardScreen.route) {
+                popUpTo(Screen.DashboardScreen.route) {
+                    saveState = true
+//                    inclusive = true
+                }
+                launchSingleTop = true
+            }
+        } else {
+            activity?.finishAffinity()
+        }
+    }
+
     NavHost(navController = navController, startDestination = Screen.DashboardScreen.route) {
         composable(Screen.DashboardScreen.route) {
             DashboardScreen(navController = navController)
