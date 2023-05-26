@@ -133,13 +133,13 @@ fun LinkedInBottomSheet(onDismiss: () -> Unit) {
                         }
 
                         SheetList(
-                            modifier = Modifier.padding(horizontal = 16.dp), listOf(
-                                BottomSheetData(R.drawable.ic_jobs, "Save"),
-                                BottomSheetData(R.drawable.ic_jobs, "Share via"),
-                                BottomSheetData(R.drawable.ic_jobs, "I don't want to see this"),
-                                BottomSheetData(R.drawable.ic_jobs, "Unfollow"),
-                                BottomSheetData(R.drawable.ic_jobs, "Remove connection"),
-                                BottomSheetData(R.drawable.ic_jobs, "Report post"),
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp), listOf(
+                                BottomSheetData(R.drawable.ic_save, "Save"),
+                                BottomSheetData(R.drawable.ic_share, "Share via"),
+                                BottomSheetData(R.drawable.ic_hide, "I don't want to see this"),
+                                BottomSheetData(R.drawable.ic_cancel, "Unfollow"),
+                                BottomSheetData(R.drawable.ic_unfollow, "Remove connection"),
+                                BottomSheetData(R.drawable.ic_report_post, "Report post"),
                             )
                         )
                     }
@@ -264,7 +264,7 @@ private fun SheetItems(modifier: Modifier = Modifier, data: BottomSheetData) {
     Row(modifier) {
         Row(Modifier.weight(9f)) {
             Image(
-                painter = painterResource(data.resId), modifier = Modifier.size(28.dp), contentDescription = data.value, colorFilter = ColorFilter.tint(
+                painter = painterResource(data.resId), modifier = Modifier.size(22.dp), contentDescription = data.value, colorFilter = ColorFilter.tint(
                     textIconViewColor().copy(alpha = ContentAlpha.medium)
                 )
             )
