@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.clone.linkedin.R
 import com.clone.linkedin.linkedin.domain.model.NotificationData
+import com.clone.linkedin.linkedin.presentation.util.component.ActionButton
 import com.clone.linkedin.linkedin.presentation.util.component.ImageViaUrl
 import com.clone.linkedin.ui.theme.LightBlue
 import com.clone.linkedin.ui.theme.textIconViewColor
@@ -68,7 +69,7 @@ private fun NotificationItem(context: Context, modifier: Modifier = Modifier, no
                     style = TextStyle(fontSize = TextUnit(14F, TextUnitType.Sp))
                 )
                 notificationData.additionalButtonText?.let {
-                    ActionButton(it)
+                    ActionButton(it, modifier = Modifier.padding(top = 16.dp).border(width = 1.dp, color = LightBlue, shape = RoundedCornerShape(24.dp)).padding(horizontal = 8.dp, vertical = 6.dp))
                 }
             }
         }
@@ -82,13 +83,5 @@ private fun NotificationItem(context: Context, modifier: Modifier = Modifier, no
                 colorFilter = ColorFilter.tint(textIconViewColor())
             )
         }
-    }
-}
-
-@Composable
-private fun ActionButton(text: String) {
-    Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(top = 16.dp).border(width = 1.dp, color = LightBlue, shape = RoundedCornerShape(24.dp)).padding(horizontal = 8.dp, vertical = 6.dp)) {
-        Text(text = text, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = LightBlue)
     }
 }

@@ -2,12 +2,19 @@ package com.clone.linkedin.linkedin.presentation.util.component
 
 import android.content.Context
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,14 +22,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -34,6 +44,7 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.size.OriginalSize
 import com.clone.linkedin.R
+import com.clone.linkedin.ui.theme.LightBlue
 import com.clone.linkedin.ui.theme.textIconViewColor
 import kotlin.random.Random
 
@@ -98,4 +109,13 @@ fun ExpandableText(
 fun currentRoute(modifier: Modifier = Modifier, navController: NavController): String? {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     return navBackStackEntry?.destination?.route
+}
+
+@Composable
+fun ActionButton(text: String, color: Color = LightBlue, rightImageResId: ImageVector? = null, modifier: Modifier) {
+    Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier) {
+        Text(text = text, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = color)
+        rightImageResId?.let { Icon(imageVector = rightImageResId, contentDescription = null, tint = color) }
+    }
 }

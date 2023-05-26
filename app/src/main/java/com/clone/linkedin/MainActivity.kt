@@ -66,6 +66,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.clone.linkedin.linkedin.presentation.addpost.AddPost
 import com.clone.linkedin.linkedin.presentation.dashboard.component.DashboardScreen
 import com.clone.linkedin.linkedin.presentation.notification.NotificationScreen
 import com.clone.linkedin.linkedin.presentation.util.Screen
@@ -248,7 +249,7 @@ private fun LinkedInNavigate(navController: NavHostController) {
             DevelopmentInProgressScreen()
         }
         composable(Screen.AddPostScreen.route) {
-            DevelopmentInProgressScreen()
+            AddPost(navController = navController)
         }
         composable(Screen.NotificationScreen.route) {
             NotificationScreen()
