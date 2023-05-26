@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -73,6 +74,7 @@ private fun NotificationItem(context: Context, modifier: Modifier = Modifier, no
         }
         Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.End) {
             Text(text = notificationData.time, textAlign = TextAlign.Start, fontSize = 12.sp)
+            Spacer(modifier = Modifier.height(7.dp))
             Image(
                 painter = painterResource(R.drawable.ic_menu_vertical),
                 contentDescription = "Menu Item",

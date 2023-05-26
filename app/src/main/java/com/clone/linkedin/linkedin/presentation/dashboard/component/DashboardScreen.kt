@@ -1,5 +1,6 @@
 package com.clone.linkedin.linkedin.presentation.dashboard.component
 
+import android.content.Context
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,7 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -49,6 +51,7 @@ import com.clone.linkedin.linkedin.presentation.dashboard.NormalPost
 import com.clone.linkedin.linkedin.presentation.dashboard.PostAction
 import com.clone.linkedin.linkedin.presentation.dashboard.PostHeader
 import com.clone.linkedin.linkedin.presentation.util.component.ExpandableText
+import com.clone.linkedin.linkedin.presentation.util.component.ImageViaUrl
 import com.clone.linkedin.linkedin.presentation.util.component.LinkedInBottomSheet
 import com.clone.linkedin.linkedin.presentation.util.component.RoundImage
 import com.clone.linkedin.ui.theme.LightBlue
@@ -72,19 +75,20 @@ fun DashboardScreen(navController: NavController) {
 @Composable
 private fun PostList(viewModel: DashboardViewModel, bottomSheetVisible: MutableState<Boolean>) {
     val posts = viewModel.postState.value
+    val context = LocalContext.current
 
     LazyColumn(modifier = Modifier.padding(top = 8.dp)) {
         items(posts.size) {
             val data = posts[it]
             if (data is NormalPost) {
-                NormalPostItem(post = data, modifier = Modifier, bottomSheetVisible = bottomSheetVisible)
+                NormalPostItem(post = data, modifier = Modifier, bottomSheetVisible = bottomSheetVisible, context = context)
             }
         }
     }
 }
 
 @Composable
-private fun NormalPostItem(modifier: Modifier = Modifier, post: NormalPost, bottomSheetVisible: MutableState<Boolean>) {
+private fun NormalPostItem(modifier: Modifier = Modifier, post: NormalPost, bottomSheetVisible: MutableState<Boolean>, context: Context) {
     val likeButtonState = remember { mutableStateOf(false) }
     val commentButtonState = remember { mutableStateOf(false) }
     val repostButtonState = remember { mutableStateOf(false) }
@@ -95,11 +99,11 @@ private fun NormalPostItem(modifier: Modifier = Modifier, post: NormalPost, bott
             post.postHeader?.let {
                 PostHeader(
                     postHeader = post.postHeader,
-                    modifier = Modifier.padding(start = 8.dp), bottomSheetVisible = bottomSheetVisible
+                    modifier = Modifier.padding(start = 8.dp), bottomSheetVisible = bottomSheetVisible, context = context
                 )
             }
             Row(modifier = Modifier.padding(start = 16.dp)) {
-                RoundImage(imageResId = post.postTop.userProfileImage, modifier = Modifier.size(48.dp))
+                context.ImageViaUrl(modifier = Modifier.size(48.dp), post.postTop.userProfileImageUrl, CircleShape)
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
                     Text(
@@ -116,12 +120,7 @@ private fun NormalPostItem(modifier: Modifier = Modifier, post: NormalPost, bott
                 text = post.postCenter.caption,
                 maxLines = 2
             )
-            Image(
-                painter = painterResource(R.drawable.sample_image),
-                modifier = Modifier.fillMaxSize(),
-                contentDescription = null,
-                contentScale = ContentScale.Crop
-            )
+            context.ImageViaUrl(modifier = Modifier.fillMaxSize(), post.postCenter.postImageUrl, RectangleShape)
             LikeShareCommentInfo(
                 modifier = Modifier.padding(10.dp),
                 postAction = post.postAction,
@@ -137,11 +136,11 @@ private fun NormalPostItem(modifier: Modifier = Modifier, post: NormalPost, bott
 }
 
 @Composable
-fun PostHeader(modifier: Modifier = Modifier, postHeader: PostHeader, bottomSheetVisible: MutableState<Boolean>) {
+fun PostHeader(modifier: Modifier = Modifier, postHeader: PostHeader, bottomSheetVisible: MutableState<Boolean>, context: Context) {
     val interactionSource = remember { MutableInteractionSource() }
     Column(Modifier.fillMaxSize()) {
         Row(modifier) {
-            RoundImage(imageResId = postHeader.actionUserImage, modifier = Modifier.size(28.dp))
+            context.ImageViaUrl(modifier = Modifier.size(28.dp), postHeader.actionUserImageUrl, CircleShape)
             Spacer(Modifier.width(8.dp))
             Text(text = postHeader.information, textAlign = TextAlign.Start, fontSize = 12.sp, modifier = Modifier.align(Alignment.CenterVertically).weight(8f))
             Image(
@@ -194,7 +193,7 @@ fun PostAction(
     repostButtonState: MutableState<Boolean>,
     sendButtonState: MutableState<Boolean>
 ) {
-    Row(horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+    Row(horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         PostActionElement(R.drawable.ic_thumbs_up, PostButtonAction.LIKE) {
             likeButtonState.value = !likeButtonState.value
         }
@@ -216,7 +215,7 @@ private fun PostActionElement(icon: Int, postButton: PostButtonAction, onClick: 
         modifier = Modifier.clickable { onClick.invoke(postButton) }) {
         Image(
             painter = painterResource(icon),
-            modifier = Modifier.size(20.dp).padding(2.dp),
+            modifier = Modifier.size(23.dp).padding(2.dp),
             contentDescription = postButton.value,
             colorFilter = ColorFilter.tint(
                 textIconViewColor()

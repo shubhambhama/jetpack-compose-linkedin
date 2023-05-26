@@ -22,37 +22,37 @@ class DashboardViewModel @Inject constructor(): ViewModel() {
         _postState.value += listOf(
             NormalPost(
                 postTop = PostTop(
-                    R.drawable.user_profile, "Shubham Bhama",
+                    "https://picsum.photos/id/64/200/200", "Shubham Bhama",
                     "Senior Software Engineer", "1s"
                 ), postCenter = PostCenter(
                     "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard " +
                             "dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-                    R.drawable.ic_launcher_background
+                    "https://picsum.photos/500/600?random=${Math.random()}"
                 ), postAction = PostAction(
                     182, 222, 52
                 ),
-                postHeader = PostHeader(R.drawable.user_profile, "XYZ commented on this")
+                postHeader = PostHeader("https://picsum.photos/id/91/200/200", "XYZ commented on this")
             ),
             NormalPost(
                 postTop = PostTop(
-                    R.drawable.user_profile, "Shubham Bhama",
+                    "https://picsum.photos/id/65/200/200", "Shubham Bhama",
                     "Senior Software Engineer", "1s"
                 ), postCenter = PostCenter(
                     "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard " +
                             "dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-                    R.drawable.ic_launcher_background
+                    "https://picsum.photos/500/500?random=${Math.random()}"
                 ), postAction = PostAction(
                     1, 2, 34
                 )
             ),
             NormalPost(
                 postTop = PostTop(
-                    R.drawable.user_profile, "Shubham Bhama",
+                    "https://picsum.photos/id/453/200/200", "Shubham Bhama",
                     "Senior Software Engineer", "1s"
                 ), postCenter = PostCenter(
                     "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard " +
                             "dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-                    R.drawable.ic_launcher_background
+                    "https://picsum.photos/500/300?random=${Math.random()}"
                 ), postAction = PostAction(
                     1, 2, 34
                 )

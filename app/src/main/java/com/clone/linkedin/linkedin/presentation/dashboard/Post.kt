@@ -32,14 +32,14 @@ data class RecommendationPost(
 ) : PostType("post_recommendation")
 
 @Keep
-data class PostHeader(val actionUserImage: Int, val information: String)
+data class PostHeader(val actionUserImageUrl: String, val information: String)
 
 @Keep
-data class PostTop(val userProfileImage: Int, val userName: String,
+data class PostTop(val userProfileImageUrl: String, val userName: String,
                    val information: String, val postTime: String)
 
 @Keep
-data class PostCenter(val caption: String, val postImage: Int)
+data class PostCenter(val caption: String, val postImageUrl: String)
 
 @Keep
 data class PostDetailAndUrl(val information: String, val url: String)
