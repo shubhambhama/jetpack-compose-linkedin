@@ -7,9 +7,10 @@ import com.clone.linkedin.R
 import com.clone.linkedin.linkedin.domain.model.BottomSheetData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlin.random.Random
 
 @HiltViewModel
-class DashboardViewModel @Inject constructor(): ViewModel() {
+class DashboardViewModel @Inject constructor() : ViewModel() {
 
     private val _postState = mutableStateOf<List<PostType>>(emptyList())
     val postState: State<List<PostType>> = _postState
@@ -19,45 +20,31 @@ class DashboardViewModel @Inject constructor(): ViewModel() {
     }
 
     private fun getPost() {
-        _postState.value += listOf(
-            NormalPost(
-                postTop = PostTop(
-                    "https://picsum.photos/id/64/200/200", "Shubham Bhama",
-                    "Senior Software Engineer", "1s"
-                ), postCenter = PostCenter(
-                    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard " +
-                            "dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-                    "https://picsum.photos/500/600?random=${Math.random()}"
-                ), postAction = PostAction(
-                    182, 222, 52
-                ),
-                postHeader = PostHeader("https://picsum.photos/id/91/200/200", "XYZ commented on this")
-            ),
-            NormalPost(
-                postTop = PostTop(
-                    "https://picsum.photos/id/65/200/200", "Shubham Bhama",
-                    "Senior Software Engineer", "1s"
-                ), postCenter = PostCenter(
-                    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard " +
-                            "dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-                    "https://picsum.photos/500/500?random=${Math.random()}"
-                ), postAction = PostAction(
-                    1, 2, 34
-                )
-            ),
-            NormalPost(
-                postTop = PostTop(
-                    "https://picsum.photos/id/453/200/200", "Shubham Bhama",
-                    "Senior Software Engineer", "1s"
-                ), postCenter = PostCenter(
-                    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard " +
-                            "dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-                    "https://picsum.photos/500/300?random=${Math.random()}"
-                ), postAction = PostAction(
-                    1, 2, 34
-                )
-            )
+        val caption =
+            "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+        val numberOfPosts = 18
+        val post = NormalPost(
+            postTop = PostTop(
+                "https://picsum.photos/id/64/200/200", "Shubham Bhama", "Senior Software Engineer", "1s"
+            ), postCenter = PostCenter(
+                caption, "https://picsum.photos/500/600?random=${Math.random()}"
+            ), postAction = PostAction(
+                Random.nextInt(18, 9999), Random.nextInt(8, 99), Random.nextInt(18, 51)
+            ), postHeader = PostHeader("https://picsum.photos/id/91/200/200", "XYZ commented on this")
         )
+        val userProfileIds = listOf(64, 65, 453, 91, 209, 334, 338, 342, 375, 447, 494, 513)
+        _postState.value += List(numberOfPosts) {
+            post.copy(
+                postTop = PostTop(
+                    "https://picsum.photos/id/${userProfileIds[Random.nextInt(userProfileIds.size)]}/200/200", "Shubham Bhama", "Senior Software Engineer", "1s"
+                ),
+                postCenter = post.postCenter.copy(
+                    postImageUrl = "https://picsum.photos/500/600?random=${Math.random()}"
+                ), postAction = PostAction(
+                    Random.nextInt(18, 9999), Random.nextInt(8, 99), Random.nextInt(18, 51)
+                ), postHeader = if (Random.nextBoolean()) PostHeader("https://picsum.photos/id/91/200/200", "XYZ commented on this") else null
+            )
+        }
     }
 
     fun getDataForPostMenu() =

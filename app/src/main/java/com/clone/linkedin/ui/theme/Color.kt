@@ -16,5 +16,4 @@ val DarkGray = Color(0xFF575757)
 val DarkGray60 = Color(0xffb0b4b9)
 val White70 = Color(0xffe5e4e5)
 
-val loveRed = Color(0xFFd7634e)
 val LightBlue = Color(0xFF56A1D6)

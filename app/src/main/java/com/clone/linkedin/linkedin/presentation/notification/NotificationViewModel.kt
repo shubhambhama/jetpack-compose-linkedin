@@ -29,5 +29,7 @@ class NotificationViewModel @Inject constructor() : ViewModel() {
         NotificationData("https://picsum.photos/200?random=${Math.random()}", "Tuesday News Wrap: Scientists use AI to discover new antibiotic to treat deadly superbug", "19h"),
         NotificationData("https://picsum.photos/200?random=${Math.random()}", "Congratulate Shubham Bhama on 5 year at XYZ \uD83C\uDF89", "1d"),
         NotificationData("https://picsum.photos/200?random=${Math.random()}", "Shubham Bhama posted: Truly agreed \uD83D\uDCAF", "1d"),
+        NotificationData("https://picsum.photos/200?random=${Math.random()}", "XYZ is hiring. Help him by sharing this job with your network: Lead Mobile Engineer", "4m", "Share job", imageShape = CircleShape),
+        NotificationData("https://picsum.photos/200?random=${Math.random()}", "Millar and 2 people viewed your profile", "4m", "Retry Premium Free", imageShape = CircleShape),
     )
 }
