@@ -57,10 +57,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.clone.linkedin.R
 import com.clone.linkedin.linkedin.presentation.util.component.ActionButton
 import com.clone.linkedin.linkedin.presentation.util.component.AskForPermission
+import com.clone.linkedin.linkedin.presentation.util.component.LinkedInBottomSheet
 import com.clone.linkedin.linkedin.presentation.util.component.RoundImage
 import com.clone.linkedin.ui.theme.DarkGray60
 import com.clone.linkedin.ui.theme.LightBlue
@@ -69,6 +71,8 @@ import com.clone.linkedin.ui.theme.textIconViewColor
 @Composable
 fun AddPost(navController: NavController, onDismiss: () -> Unit) {
     val isPostGrayedOut = remember { mutableStateOf(true) }
+    val bottomSheetVisible = remember { mutableStateOf(false) }
+    val viewModel: AddPostViewModel = hiltViewModel()
     Dialog(
         onDismissRequest = { onDismiss() }, properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
@@ -80,7 +84,12 @@ fun AddPost(navController: NavController, onDismiss: () -> Unit) {
                 AddPostTopHeader()
                 WritePost(hint = "What do you want to talk about?", modifier = Modifier.fillMaxWidth(), isPostGrayedOut)
                 Spacer(modifier = Modifier.weight(1f))
-                Footer(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp))
+                Footer(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp), bottomSheetVisible)
+            }
+            if (bottomSheetVisible.value) {
+                LinkedInBottomSheet(viewModel.getDataForPostMenu()) {
+                    bottomSheetVisible.value = false
+                }
             }
         }
     }
@@ -149,7 +158,7 @@ private fun WritePost(hint: String = "", modifier: Modifier = Modifier, isPostGr
 }
 
 @Composable
-private fun Footer(modifier: Modifier = Modifier) {
+private fun Footer(modifier: Modifier = Modifier, bottomSheetVisible: MutableState<Boolean>) {
     val context = LocalContext.current
     val takePicture = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) {}
     val takeVideo = rememberLauncherForActivityResult(ActivityResultContracts.CaptureVideo()) {}
@@ -167,7 +176,7 @@ private fun Footer(modifier: Modifier = Modifier) {
                 openGallery.launch("image/*")
             }
             FooterIcon(R.drawable.ic_menu_vertical, modifier = Modifier.rotate(90f).size(26.dp)) {
-
+                bottomSheetVisible.value = true
             }
         }
         AnyoneWithIcon(modifier = Modifier.weight(3f))
