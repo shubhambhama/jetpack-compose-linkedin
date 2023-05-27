@@ -6,6 +6,6 @@ sealed class Screen(val route: String) {
     object AddPostScreen: Screen("linkedin_add_post_screen")
     object NotificationScreen: Screen("linkedin_notification_screen")
     object JobsScreen: Screen("linkedin_jobs_screen")
-    object PostDetailsScreen: Screen("linkedin_post_details_screen")
+    object MessageScreen: Screen("linkedin_message_screen")
     object UserProfileScreen: Screen("linkedin_user_profile_screen")
 }

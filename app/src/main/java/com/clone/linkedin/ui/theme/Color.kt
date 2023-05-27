@@ -17,3 +17,5 @@ val DarkGray60 = Color(0xffb0b4b9)
 val White70 = Color(0xffe5e4e5)
 
 val LightBlue = Color(0xFF56A1D6)
+
+val TabGreen = Color(0xFF4ed78a)

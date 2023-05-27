@@ -63,9 +63,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.clone.linkedin.linkedin.presentation.addpost.AddPost
 import com.clone.linkedin.linkedin.presentation.dashboard.component.DashboardScreen
+import com.clone.linkedin.linkedin.presentation.message.MessageScreen
 import com.clone.linkedin.linkedin.presentation.notification.NotificationScreen
 import com.clone.linkedin.linkedin.presentation.util.Screen
 import com.clone.linkedin.linkedin.presentation.util.component.RoundImage
+import com.clone.linkedin.linkedin.presentation.util.component.SearchBar
 import com.clone.linkedin.linkedin.presentation.util.component.currentRoute
 import com.clone.linkedin.ui.theme.JetpackComposeLinkedInCloneTheme
 import com.clone.linkedin.ui.theme.textIconViewColor
@@ -83,8 +85,11 @@ class MainActivity : ComponentActivity() {
             JetpackComposeLinkedInCloneTheme {
                 Column {
                     TopBar(
-                        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(top = 8.dp, bottom = 6.dp, end = 12.dp, start = 12.dp)
-                    )
+                        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(top = 8.dp, bottom = 6.dp, end = 12.dp, start = 12.dp),
+                        navController
+                    ) {
+                        navController.navigate(Screen.MessageScreen.route)
+                    }
                     MainContent(navController = navController)
                 }
             }
@@ -113,22 +118,24 @@ fun MainContent(viewModel: MainViewModel = hiltViewModel(), navController: NavHo
 }
 
 @Composable
-private fun TopBar(modifier: Modifier = Modifier) {
-    androidx.compose.material3.Surface(modifier = modifier) {
-        Row(verticalAlignment = CenterVertically) {
-            RoundImage(
-                modifier = Modifier.size(30.dp)
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            SearchBar(
-                modifier = Modifier.fillMaxWidth().height(36.dp).weight(8f).background(textIconViewColorReverse(), RoundedCornerShape(4.dp)).alpha(0.9f), hint = "Search"
-            )
-            Image(
-                painter = painterResource(id = R.drawable.ic_message),
-                contentDescription = "Message",
-                modifier = Modifier.padding(start = 8.dp).width(32.dp).height(24.dp).weight(1f).alpha(0.8f),
-                colorFilter = ColorFilter.tint(textIconViewColor())
-            )
+private fun TopBar(modifier: Modifier = Modifier, navController: NavHostController, onMessageClick: () -> Unit) {
+    if (isBottomBarPages(navController = navController)) {
+        androidx.compose.material3.Surface(modifier = modifier) {
+            Row(verticalAlignment = CenterVertically) {
+                RoundImage(
+                    modifier = Modifier.size(30.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                SearchBar(
+                    modifier = Modifier.fillMaxWidth().height(36.dp).weight(8f).background(textIconViewColorReverse(), RoundedCornerShape(4.dp)).alpha(0.9f), hint = "Search"
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.ic_message),
+                    contentDescription = "Message",
+                    modifier = Modifier.padding(start = 8.dp).width(32.dp).height(24.dp).weight(1f).alpha(0.8f).clickable { onMessageClick.invoke() },
+                    colorFilter = ColorFilter.tint(textIconViewColor())
+                )
+            }
         }
     }
 }
@@ -136,23 +143,25 @@ private fun TopBar(modifier: Modifier = Modifier) {
 @Composable
 private fun BottomBar(modifier: Modifier = Modifier, navController: NavController, screens: List<Triple<Screen, Int, Int>>, showDialog: MutableState<Boolean>) {
     val context = LocalContext.current
-    BottomNavigation(backgroundColor = MaterialTheme.colorScheme.surface, modifier = modifier) {
-        val currentRoute = currentRoute(navController = navController)
-        screens.forEach { screen ->
-            BottomNavigationItem(icon = {
-                BottomBarItem(screen, context, currentRoute)
-            }, selected = currentRoute == screen.first.route, alwaysShowLabel = true, onClick = {
-                if (screen.first.route == Screen.DashboardScreen.route) {
-                    navController.navigate(Screen.DashboardScreen.route) {
-                        popUpTo(navController.graph.startDestinationId)
-                        launchSingleTop = true
+    if (isBottomBarPages(navController = navController)) {
+        BottomNavigation(backgroundColor = MaterialTheme.colorScheme.surface, modifier = modifier) {
+            val currentRoute = currentRoute(navController = navController)
+            screens.forEach { screen ->
+                BottomNavigationItem(icon = {
+                    BottomBarItem(screen, context, currentRoute)
+                }, selected = currentRoute == screen.first.route, alwaysShowLabel = true, onClick = {
+                    if (screen.first.route == Screen.DashboardScreen.route) {
+                        navController.navigate(Screen.DashboardScreen.route) {
+                            popUpTo(navController.graph.startDestinationId)
+                            launchSingleTop = true
+                        }
+                    } else if (screen.first.route == Screen.AddPostScreen.route) {
+                        showDialog.value = true
+                    } else if (currentRoute != screen.first.route) {
+                        navController.navigate(screen.first.route)
                     }
-                } else if (screen.first.route == Screen.AddPostScreen.route) {
-                    showDialog.value = true
-                } else if (currentRoute != screen.first.route) {
-                    navController.navigate(screen.first.route)
-                }
-            })
+                })
+            }
         }
     }
 }
@@ -170,42 +179,6 @@ private fun BottomBarItem(screen: Triple<Screen, Int, Int>, context: Context, cu
         )
 
         Text(text = context.getString(screen.third), fontSize = TextUnit(10F, TextUnitType.Sp), color = selectedUnselectedColor, modifier = Modifier.padding(2.dp))
-    }
-}
-
-@Composable
-private fun SearchBar(modifier: Modifier = Modifier, hint: String = "", onSearch: (String) -> Unit = {}) {
-    val text = remember {
-        mutableStateOf("")
-    }
-    var isHintDisplayed by remember {
-        mutableStateOf(hint.isNotEmpty())
-    }
-    Box(modifier = modifier) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_search),
-            contentDescription = "Search",
-            modifier = Modifier.padding(start = 8.dp).size(17.dp).align(Alignment.CenterStart),
-            colorFilter = ColorFilter.tint(textIconViewColor())
-        )
-        BasicTextField(value = text.value,
-            onValueChange = {
-                text.value = it
-                onSearch.invoke(it)
-            },
-            maxLines = 1,
-            singleLine = true,
-            textStyle = TextStyle(color = textIconViewColor()),
-            modifier = Modifier.fillMaxSize().padding(start = 36.dp, top = 8.dp, bottom = 8.dp, end = 8.dp).onFocusChanged {
-                isHintDisplayed = !it.isFocused && text.value.isEmpty()
-            },
-            cursorBrush = SolidColor(
-                textIconViewColor()
-            )
-        )
-        if (isHintDisplayed) {
-            Text(text = hint, color = textIconViewColor(), modifier = Modifier.padding(horizontal = 36.dp, vertical = 6.dp))
-        }
     }
 }
 
@@ -241,6 +214,9 @@ private fun LinkedInNavigate(navController: NavHostController, showDialog: Mutab
         composable(Screen.JobsScreen.route) {
             DevelopmentInProgressScreen()
         }
+        composable(Screen.MessageScreen.route) {
+            MessageScreen(navController)
+        }
     }
 
     if (showDialog.value) {
@@ -261,4 +237,11 @@ fun DevelopmentInProgressScreen() {
             )
         }
     }
+}
+
+@Composable
+private fun isBottomBarPages(navController: NavController): Boolean {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination?.route
+    return currentDestination == Screen.DashboardScreen.route || currentDestination == Screen.MyNetworkScreen.route || currentDestination == Screen.NotificationScreen.route || currentDestination == Screen.JobsScreen.route
 }
