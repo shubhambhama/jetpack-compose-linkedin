@@ -20,15 +20,18 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.ColorFilter
@@ -48,20 +51,22 @@ import com.clone.linkedin.R
 import com.clone.linkedin.linkedin.presentation.util.component.ActionButton
 import com.clone.linkedin.linkedin.presentation.util.component.RoundImage
 import com.clone.linkedin.ui.theme.DarkGray60
+import com.clone.linkedin.ui.theme.LightBlue
 import com.clone.linkedin.ui.theme.textIconViewColor
 
 @Composable
 fun AddPost(navController: NavController, onDismiss: () -> Unit) {
+    val isPostGrayedOut = remember { mutableStateOf(true) }
     Dialog(
         onDismissRequest = { onDismiss() }, properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
             Column(modifier = Modifier.padding(start = 16.dp)) {
-                Toobar(Modifier.padding(top = 16.dp)) {
+                Toobar(Modifier.padding(top = 16.dp), isPostGrayedOut) {
                     onDismiss.invoke()
                 }
                 AddPostTopHeader()
-                WritePost(hint = "What do you want to talk about?", modifier = Modifier.fillMaxWidth())
+                WritePost(hint = "What do you want to talk about?", modifier = Modifier.fillMaxWidth(), isPostGrayedOut)
                 Spacer(modifier = Modifier.weight(1f))
                 Footer(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp))
             }
@@ -70,7 +75,7 @@ fun AddPost(navController: NavController, onDismiss: () -> Unit) {
 }
 
 @Composable
-private fun Toobar(modifier: Modifier = Modifier, onCloseButton: () -> Unit) {
+private fun Toobar(modifier: Modifier = Modifier, isPostGrayedOut: MutableState<Boolean>, onCloseButton: () -> Unit) {
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         Image(
             painter = painterResource(R.drawable.ic_close),
@@ -81,7 +86,8 @@ private fun Toobar(modifier: Modifier = Modifier, onCloseButton: () -> Unit) {
         Spacer(modifier = Modifier.weight(1f))
         Image(painter = painterResource(R.drawable.ic_time), contentDescription = "Schedule", modifier = Modifier.size(22.dp), colorFilter = ColorFilter.tint(textIconViewColor()))
         Spacer(modifier = Modifier.width(16.dp))
-        Button(onClick = {}, modifier = Modifier.padding(end = 16.dp).height(36.dp), contentPadding = PaddingValues(0.dp)) {
+        Button(onClick = {}, modifier = Modifier.padding(end = 16.dp).height(36.dp).alpha(if (isPostGrayedOut.value) 0.3f else 1f), contentPadding = PaddingValues(0.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = if (isPostGrayedOut.value) textIconViewColor() else LightBlue)) {
             Text(text = "Post", style = TextStyle(fontSize = 14.sp), textAlign = TextAlign.Center)
         }
     }
@@ -109,12 +115,13 @@ private fun AddPostTopHeader() {
 }
 
 @Composable
-private fun WritePost(hint: String = "", modifier: Modifier = Modifier) {
+private fun WritePost(hint: String = "", modifier: Modifier = Modifier, isPostGrayedOut: MutableState<Boolean>) {
     val text = remember { mutableStateOf("") }
     val isHintDisplayed = remember { mutableStateOf(true) }
     Box(modifier) {
         BasicTextField(value = text.value, onValueChange = {
             text.value = it
+            isPostGrayedOut.value = text.value.isEmpty()
         }, textStyle = TextStyle(color = textIconViewColor(), fontSize = 16.sp), modifier = Modifier.onFocusChanged {
             isHintDisplayed.value = !it.isFocused && text.value.isEmpty()
         }, cursorBrush = SolidColor(textIconViewColor()))
