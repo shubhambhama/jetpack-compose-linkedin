@@ -2,9 +2,11 @@ package com.clone.linkedin.linkedin.presentation.addpost
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -33,11 +36,13 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.clone.linkedin.R
 import com.clone.linkedin.linkedin.presentation.util.component.ActionButton
@@ -46,17 +51,41 @@ import com.clone.linkedin.ui.theme.DarkGray60
 import com.clone.linkedin.ui.theme.textIconViewColor
 
 @Composable
-fun AddPost(navController: NavController) {
-    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
-        Column(modifier = Modifier.padding(start = 16.dp)) {
-            AddPostTopHeader()
-            WritePost(hint = "What do you want to talk about?", modifier = Modifier.fillMaxWidth())
-            Spacer(modifier = Modifier.weight(1f))
-            Footer(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp))
+fun AddPost(navController: NavController, onDismiss: () -> Unit) {
+    Dialog(
+        onDismissRequest = { onDismiss() }, properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surface) {
+            Column(modifier = Modifier.padding(start = 16.dp)) {
+                Toobar(Modifier.padding(top = 16.dp)) {
+                    onDismiss.invoke()
+                }
+                AddPostTopHeader()
+                WritePost(hint = "What do you want to talk about?", modifier = Modifier.fillMaxWidth())
+                Spacer(modifier = Modifier.weight(1f))
+                Footer(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp))
+            }
         }
     }
 }
 
+@Composable
+private fun Toobar(modifier: Modifier = Modifier, onCloseButton: () -> Unit) {
+    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
+        Image(
+            painter = painterResource(R.drawable.ic_close),
+            contentDescription = "close",
+            modifier = Modifier.size(22.dp).clickable { onCloseButton.invoke() },
+            colorFilter = ColorFilter.tint(textIconViewColor())
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Image(painter = painterResource(R.drawable.ic_time), contentDescription = "Schedule", modifier = Modifier.size(22.dp), colorFilter = ColorFilter.tint(textIconViewColor()))
+        Spacer(modifier = Modifier.width(16.dp))
+        Button(onClick = {}, modifier = Modifier.padding(end = 16.dp).height(36.dp), contentPadding = PaddingValues(0.dp)) {
+            Text(text = "Post", style = TextStyle(fontSize = 14.sp), textAlign = TextAlign.Center)
+        }
+    }
+}
 
 @Composable
 private fun AddPostTopHeader() {

@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -74,11 +75,13 @@ import kotlinx.coroutines.launch
 fun DashboardScreen(navController: NavController) {
     val bottomSheetVisible = remember { mutableStateOf(false) }
     val viewModel: DashboardViewModel = hiltViewModel()
-    Box(Modifier.fillMaxSize().background(Color.Black)) {
-        PostList(bottomSheetVisible = bottomSheetVisible, viewModel = viewModel)
-        if (bottomSheetVisible.value) {
-            LinkedInBottomSheet(viewModel.getDataForPostMenu()) {
-                bottomSheetVisible.value = false
+    Surface {
+        Box(Modifier.fillMaxSize()) {
+            PostList(bottomSheetVisible = bottomSheetVisible, viewModel = viewModel)
+            if (bottomSheetVisible.value) {
+                LinkedInBottomSheet(viewModel.getDataForPostMenu()) {
+                    bottomSheetVisible.value = false
+                }
             }
         }
     }

@@ -41,8 +41,13 @@ fun JetpackComposeLinkedInCloneTheme(
     }
 
     val systemUiController = rememberSystemUiController()
-    if (darkTheme) systemUiController.setStatusBarColor(color = colorScheme.background, darkIcons = false)
-    else systemUiController.setStatusBarColor(color = Color.White, darkIcons = true)
+    if (darkTheme) {
+        systemUiController.setStatusBarColor(color = colorScheme.background, darkIcons = false)
+        systemUiController.setNavigationBarColor(color = colorScheme.background, darkIcons = false)
+    } else {
+        systemUiController.setStatusBarColor(color = Color.White, darkIcons = true)
+        systemUiController.setNavigationBarColor(color = Color.White, darkIcons = true)
+    }
 
     MaterialTheme(
         colorScheme = colorScheme,
@@ -54,4 +59,9 @@ fun JetpackComposeLinkedInCloneTheme(
 @Composable
 fun textIconViewColor(): Color {
     return if (isSystemInDarkTheme()) LightGray else DarkGray
+}
+
+@Composable
+fun textIconViewColorReverse(): Color {
+    return if (isSystemInDarkTheme()) DarkGray else LightGray
 }
