@@ -1,5 +1,15 @@
 package com.clone.linkedin.linkedin.presentation.addpost
 
+import android.Manifest
+import android.content.ContentValues
+import android.content.Context
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.Uri
+import android.provider.MediaStore
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -36,6 +46,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
@@ -49,6 +60,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.clone.linkedin.R
 import com.clone.linkedin.linkedin.presentation.util.component.ActionButton
+import com.clone.linkedin.linkedin.presentation.util.component.AskForPermission
 import com.clone.linkedin.linkedin.presentation.util.component.RoundImage
 import com.clone.linkedin.ui.theme.DarkGray60
 import com.clone.linkedin.ui.theme.LightBlue
@@ -86,8 +98,12 @@ private fun Toobar(modifier: Modifier = Modifier, isPostGrayedOut: MutableState<
         Spacer(modifier = Modifier.weight(1f))
         Image(painter = painterResource(R.drawable.ic_time), contentDescription = "Schedule", modifier = Modifier.size(22.dp), colorFilter = ColorFilter.tint(textIconViewColor()))
         Spacer(modifier = Modifier.width(16.dp))
-        Button(onClick = {}, modifier = Modifier.padding(end = 16.dp).height(36.dp).alpha(if (isPostGrayedOut.value) 0.3f else 1f), contentPadding = PaddingValues(0.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = if (isPostGrayedOut.value) textIconViewColor() else LightBlue)) {
+        Button(
+            onClick = {},
+            modifier = Modifier.padding(end = 16.dp).height(36.dp).alpha(if (isPostGrayedOut.value) 0.3f else 1f),
+            contentPadding = PaddingValues(0.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = if (isPostGrayedOut.value) textIconViewColor() else LightBlue)
+        ) {
             Text(text = "Post", style = TextStyle(fontSize = 14.sp), textAlign = TextAlign.Center)
         }
     }
@@ -134,23 +150,36 @@ private fun WritePost(hint: String = "", modifier: Modifier = Modifier, isPostGr
 
 @Composable
 private fun Footer(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val takePicture = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) {}
+    val takeVideo = rememberLauncherForActivityResult(ActivityResultContracts.CaptureVideo()) {}
+    val openGallery = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {}
+    val requestPermission = AskForPermission()
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         Row(modifier = Modifier.weight(7f), verticalAlignment = Alignment.CenterVertically) {
-            FooterIcon(R.drawable.ic_camera, modifier = Modifier.size(24.dp))
-            FooterIcon(R.drawable.ic_cam_recorder, modifier = Modifier.size(26.dp))
-            FooterIcon(R.drawable.ic_gallery, modifier = Modifier.size(30.dp))
-            FooterIcon(R.drawable.ic_menu_vertical, modifier = Modifier.rotate(90f).size(26.dp))
+            FooterIcon(R.drawable.ic_camera, modifier = Modifier.size(24.dp)) {
+                context.OpenCamera(takePicture, requestPermission)
+            }
+            FooterIcon(R.drawable.ic_cam_recorder, modifier = Modifier.size(26.dp)) {
+                context.CaptureVideo(takeVideo, requestPermission)
+            }
+            FooterIcon(R.drawable.ic_gallery, modifier = Modifier.size(30.dp)) {
+                openGallery.launch("image/*")
+            }
+            FooterIcon(R.drawable.ic_menu_vertical, modifier = Modifier.rotate(90f).size(26.dp)) {
+
+            }
         }
         AnyoneWithIcon(modifier = Modifier.weight(3f))
     }
 }
 
 @Composable
-private fun FooterIcon(resId: Int, modifier: Modifier = Modifier) {
+private fun FooterIcon(resId: Int, modifier: Modifier = Modifier, onClickAction: () -> Unit) {
     Image(
         painter = painterResource(resId),
         contentDescription = "Menu Item",
-        modifier = Modifier.padding(horizontal = 8.dp).then(modifier),
+        modifier = Modifier.padding(horizontal = 8.dp).then(modifier).clickable { onClickAction.invoke() },
         colorFilter = ColorFilter.tint(textIconViewColor())
     )
 }
@@ -164,4 +193,29 @@ private fun AnyoneWithIcon(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.width(6.dp))
         Text(text = "Anyone", fontSize = 14.sp, color = textIconViewColor())
     }
+}
+
+private fun Context.OpenCamera(takePicture: ManagedActivityResultLauncher<Void?, Bitmap?>, requestPermission: ManagedActivityResultLauncher<String, Boolean>) {
+    if (this.checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+        takePicture.launch(null)
+    } else {
+        requestPermission.launch(Manifest.permission.CAMERA)
+    }
+}
+
+private fun Context.CaptureVideo(takePicture: ManagedActivityResultLauncher<Uri, Boolean>, requestPermission: ManagedActivityResultLauncher<String, Boolean>) {
+    if (this.checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+        this.createVideoUri()?.let { takePicture.launch(it) }
+    } else {
+        requestPermission.launch(Manifest.permission.CAMERA)
+    }
+}
+
+private fun Context.createVideoUri(): Uri? {
+    val fileName = "${System.currentTimeMillis()}.mp4"
+    val contentValues = ContentValues().apply {
+        put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+        put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4")
+    }
+    return contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues)
 }

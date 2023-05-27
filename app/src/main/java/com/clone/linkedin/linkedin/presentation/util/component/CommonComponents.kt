@@ -1,6 +1,9 @@
 package com.clone.linkedin.linkedin.presentation.util.component
 
 import android.content.Context
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -118,4 +121,11 @@ fun ActionButton(text: String, color: Color = LightBlue, rightImageResId: ImageV
         Text(text = text, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = color)
         rightImageResId?.let { Icon(imageVector = rightImageResId, contentDescription = null, tint = color) }
     }
+}
+
+@Composable
+fun AskForPermission(grantedCallback: () -> Unit = {}, deniedCallback: () -> Unit = {}): ManagedActivityResultLauncher<String, Boolean> {
+    return rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission(), onResult = { isGranted ->
+        if (isGranted) grantedCallback.invoke() else deniedCallback.invoke()
+    })
 }
